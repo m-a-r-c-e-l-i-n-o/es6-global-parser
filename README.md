@@ -1,5 +1,5 @@
 # ES6 Global Parser
-Extracts all named imports, exports, and constants in the main execution context from a valid ES6 module file. It uses [Espree 3+](https://github.com/eslint/espree) to reliably parse the file.
+Extracts all global imports, exports, and constants in the main execution context from a valid ES6 module file. It uses [Espree 3+](https://github.com/eslint/espree) to reliably parse the file.
 
 ## Installation
 ```bash
@@ -11,37 +11,55 @@ npm install --save es6-global-parser
 import ES6GlobalParser from 'es6-global-parser'
 
 const code = `
-import Path from 'path'
-import * as All from 'everything'
-import Complex, { someMethod as TheMethod, complexMethod } from 'complex'
+import path from 'path'
+import * as all from 'everything'
+import complex, { someMethod as theMethod, complexMethod } from 'complex'
 
-const Bar = () => {
+const bar = () => {
     // The "closure" constant will not be included since it's not part of
     // the main execution context of this file.
     const closure = () => {}
 }
 
-const Foo = () => {}
+const foo = () => {}
 
-// The "FooLet" and "FooVar" variables will not be included since it's not a "const" declaration.
-let FooLet = () => {}
-var FooVar = () => {}
+// The "barLet" and "barVar" variables will not be included since it's not a "const" declaration.
+let barLet = () => {}
+var barVar = () => {}
 
-export default Bar
-export { Foo, Path }
+export default bar
+export { foo, path }
 `
 
 ES6GlobalParser(code)
-// output: [
-// { type: 'import', name: 'Path', start: 20, end: 24 },
-// { type: 'import', name: 'All', start: 61, end: 64 },
-// { type: 'import', name: 'Complex', start: 102, end: 109 },
-// { type: 'import', name: 'TheMethod', start: 127, end: 136 },
-// { type: 'import', name: 'complexMethod', start: 138, end: 151 },
-// { type: 'const', name: 'Bar', start: 188, end: 191 },
-// { type: 'const', name: 'Foo', start: 422, end: 425 },
-// { type: 'export', name: 'Bar', start: 644, end: 647 },
-// { type: 'export', name: 'Foo', start: 669, end: 672 },
-// { type: 'export', name: 'Path', start: 674, end: 678 }
-// ]
+// output -> {
+//    imports: {
+//        start: 13,
+//        end: 168,
+//        nodes: [
+//            { name: 'path', start: 20, end: 24 },
+//            { name: 'all', start: 61, end: 64 },
+//            { name: 'complex', start: 102, end: 109 },
+//            { name: 'theMethod', start: 127, end: 136 },
+//            { name: 'complexMethod', start: 138, end: 151 }
+//        ]
+//    },
+//    constants: {
+//        start: 182,
+//        end: 436,
+//        nodes: [
+//            { name: 'bar', start: 188, end: 191 },
+//            { name: 'foo', start: 422, end: 425 }
+//        ]
+//    },
+//    exports: {
+//        start: 629,
+//        end: 680,
+//        nodes: [
+//            { name: 'bar', start: 644, end: 647 },
+//            { name: 'foo', start: 669, end: 672 },
+//            { name: 'path', start: 674, end: 678 }
+//        ]
+//    }
+// }
 ```

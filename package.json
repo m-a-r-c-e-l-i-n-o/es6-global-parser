@@ -1,7 +1,7 @@
 {
   "name": "es6-global-parser",
-  "version": "0.0.1",
-  "description": "Extracts all named imports, exports, and constants in the main execution context from a valid ES6 module file.",
+  "version": "0.0.2",
+  "description": "Extracts all global imports, exports, and constants in the main execution context from a valid ES6 module file.",
   "main": "dist/es6-global-parser.js",
   "scripts": {
     "test": "npm run build && nutra --config ./nutra.config.js",
